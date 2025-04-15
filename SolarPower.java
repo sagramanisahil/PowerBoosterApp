@@ -1,85 +1,48 @@
 import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.net.Socket;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+public class SolarPower{
+	JFrame MainFrame = new JFrame();
+	JTextArea Azimuth_Angle = new JTextArea();
+	JTextArea Tilt_Angle = new JTextArea();
 
-public class SolarPower {
-    public static void main(String[] args) {
-        JFrame frame=new JFrame();
-        Container c=frame.getContentPane();
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        BorderLayout bl=new BorderLayout();
-        c.setLayout(bl);
-        c.setBackground(Color.BLACK);
+	public void DataReciever()
+	{
+		try{
+			Socket Client_Socket = new Socket("127.0.0.1",8080);
+			BufferedReader Server_Reader = new BufferedReader(new InputStreamReader(Client_Socket.getInputStream()));
 
-        JButton send = new JButton("Send");
+			String TiltAngle = "Current Tilt Angle : "+Server_Reader.readLine();
+			String AzimuthAngle = "Current Azimuth Angle : "+Server_Reader.readLine(); //recieves values from the server
 
+			Tilt_Angle.setText(TiltAngle);
+			Azimuth_Angle.setText(AzimuthAngle);  	// Sets the value of labels
+			Server_Reader.close();
+		}
+		catch(Exception e)
+		{
+			System.out.println("Error connecting");
+			e.printStackTrace();
+		}
+	}
+	public void CreateGUI()
+	{
+		MainFrame.setLayout(new BorderLayout());
+		MainFrame.add(Tilt_Angle, BorderLayout.NORTH);
+		MainFrame.add(Azimuth_Angle, BorderLayout.CENTER);
 
+		MainFrame.setTitle("Robotic Arm");
 
-
-        JPanel panel=new JPanel();
-        JPanel panel2=new JPanel();
-
-        JLabel title=new JLabel("Solar Power");
-        JLabel title2=new JLabel("TEAM SEMICOLONGEEKS");
-        JLabel DateLab=new JLabel("Date");
-        JLabel MonthLab=new JLabel("Month");
-        JLabel latitudeLab=new JLabel("Latitude");
-        JLabel calculate=new JLabel("calculate");
-
-        JTextField date=new JTextField();
-        JTextField month=new JTextField();
-        JTextField latitude=new JTextField();
-        JTextField result=new JTextField();
-        panel.add (DateLab) ;
-        panel.add (date) ;
-
-        panel.add (MonthLab) ;
-        panel.add (month) ;
-
-        panel.add (latitudeLab) ;
-        panel.add (latitude) ;
-
-        panel.add(calculate);
-        panel.add(result);
-
-        panel.add(send);
-
-
-
-
-
-
-title.setBackground(Color.WHITE);
-        title.setForeground(Color.WHITE);
-
-        title2.setForeground(Color.WHITE);
-
-        panel.setLayout(new GridLayout(5,2));
-
-        frame.setBackground(Color.BLUE);
-
-
-
-
-
-c.add(title,BorderLayout.NORTH);
-        c.add(panel,BorderLayout.CENTER);
-        c.add(title2,BorderLayout.SOUTH);
-
-
-
-
-
-
-
-
-
-
-
-
-        frame.setVisible(true);
-        frame.setSize(300,200);
-        frame.setBackground(Color.WHITE);
-
-    }
+		MainFrame.setSize(400,500);
+		MainFrame.setVisible(true);
+		MainFrame.setDefaultCloseOperation(3);
+	}
+	public static void main(String [] args)
+	{
+		SolarPower sc = new SolarPower();
+		sc.CreateGUI();
+		sc.DataReciever();
+	}
 }
-
